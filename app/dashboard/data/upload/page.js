@@ -47,7 +47,7 @@ export default function UploadDataPage() {
 
             setIsUploading(true);
 
-            reader.onload = (event) => {
+            reader.onload = async (event) => {
                 const result = event.target.result;
                 let importedData = [];
 
@@ -72,19 +72,22 @@ export default function UploadDataPage() {
                         const parsed = JSON.parse(result);
                         importedData = Array.isArray(parsed) ? parsed : [parsed];
                     }
-                    else if (['sql', 'txt', 'rtf', 'xml', 'docx', 'odt'].includes(extension)) {
-                        // Extract patterns like "10, 20, 30, Label" or similar
-                        const text = typeof result === 'string' ? result : new TextDecoder().decode(result);
-                        const lines = text.split('\n');
-                        lines.forEach(line => {
-                            const match = line.match(/(\d+[\.\d]*)\D+(\d+[\.\d]*)\D+(\d+[\.\d]*)\D+([A-Za-z0-9]+)/);
-                            if (match) {
-                                importedData.push({
-                                    features: [Number(match[1]), Number(match[2]), Number(match[3])],
-                                    label: match[4]
-                                });
-                            }
+                    else if (['pdf', 'docx', 'sql', 'txt', 'rtf', 'xml', 'odt'].includes(extension)) {
+                        // Use backend parser for these
+                        const formData = new FormData();
+                        formData.append('file', file);
+
+                        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/parse`, {
+                            method: 'POST',
+                            body: formData
                         });
+
+                        const resData = await response.json();
+                        if (resData.success) {
+                            importedData = resData.extracted;
+                        } else {
+                            throw new Error(resData.error || "Gagal parsing di backend");
+                        }
                     }
                     else if (extension === 'data') {
                         const decoded = atob(result);

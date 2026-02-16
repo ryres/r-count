@@ -6,6 +6,12 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import sys
 import os
+import io
+import re
+
+# New imports for parsing
+import PyPDF2
+from docx import Document
 
 # Add algorithms directory to path
 sys.path.append(os.path.dirname(__file__))
@@ -15,6 +21,43 @@ from algorithms.fuzzy_logic import simple_fuzzy_inference, FuzzyLogicSystem
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS untuk Next.js
+
+@app.route('/api/parse', methods=['POST'])
+def parse_file():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['file']
+    filename = file.filename.lower()
+    content = ""
+    try:
+        if filename.endswith('.pdf'):
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(file.read()))
+            for page in pdf_reader.pages:
+                content += page.extract_text() + "\n"
+        elif filename.endswith('.docx'):
+            doc = Document(io.BytesIO(file.read()))
+            for para in doc.paragraphs:
+                content += para.text + "\n"
+        else:
+            content = file.read().decode('utf-8', errors='ignore')
+        extracted = extract_data_from_text(content)
+        return jsonify({"success": True, "extracted": extracted, "count": len(extracted)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# Helper to extract data from text using regex
+def extract_data_from_text(text):
+    data = []
+    lines = text.split('\n')
+    for line in lines:
+        # Match pattern like: 10, 20, 30, Label or 10.5 20.3 30.1 A
+        match = re.search(r'(\d+[\.\d]*)\D+(\d+[\.\d]*)\D+(\d+[\.\d]*)\D+([A-Za-z0-9]+)', line)
+        if match:
+            data.append({
+                "features": [float(match.group(1)), float(match.group(2)), float(match.group(3))],
+                "label": match.group(4)
+            })
+    return data
 
 # Health check endpoint
 @app.route('/api/health', methods=['GET'])

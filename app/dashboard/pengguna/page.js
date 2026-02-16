@@ -37,6 +37,13 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 export default function PenggunaPage() {
     const { users, addUser, deleteUser, isMounted } = usePenelitiAhli();
@@ -53,7 +60,7 @@ export default function PenggunaPage() {
         if (!newUser.name || !newUser.email) return;
 
         addUser(newUser);
-        setNewUser({ name: "", email: "", role: "Peneliti" });
+        setNewUser({ name: "", email: "", role: "user" });
         toast(`Pengguna ${newUser.name} berhasil ditambahkan!`, "success");
     };
 
@@ -109,14 +116,18 @@ export default function PenggunaPage() {
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] font-bold uppercase tracking-wider opacity-60">Role / Hak Akses</label>
-                                <select
-                                    className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all font-medium"
+                                <Select
                                     value={newUser.role}
-                                    onChange={e => setNewUser({ ...newUser, role: e.target.value })}
+                                    onValueChange={val => setNewUser({ ...newUser, role: val })}
                                 >
-                                    <option value="user">User (Peneliti)</option>
-                                    <option value="administrator">Administrator (Admin)</option>
-                                </select>
+                                    <SelectTrigger className="h-10">
+                                        <SelectValue placeholder="Pilih Role" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="user">User (Peneliti)</SelectItem>
+                                        <SelectItem value="administrator">Administrator (Admin)</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 font-bold">
                                 <Plus className="mr-2 h-4 w-4" /> Tambah User

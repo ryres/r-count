@@ -59,12 +59,27 @@ class KNNAlgorithm:
         )
         self.model.fit(X_train_scaled, y_train)
         
-        # Hitung accuracy dengan cross-validation
-        cv_scores = cross_val_score(self.model, X_train_scaled, y_train, cv=5)
+        # Hitung accuracy dengan cross-validation (dinamis cv)
+        try:
+            n_samples = len(X_train)
+            cv_value = min(5, n_samples) if n_samples >= 2 else 0
+            
+            if cv_value >= 2:
+                cv_scores = cross_val_score(self.model, X_train_scaled, y_train, cv=cv_value)
+                accuracy = float(np.mean(cv_scores))
+                std_dev = float(np.std(cv_scores))
+            else:
+                # Fallback jika data terlalu sedikit untuk CV
+                self.model.fit(X_train_scaled, y_train)
+                accuracy = float(self.model.score(X_train_scaled, y_train))
+                std_dev = 0.0
+        except Exception:
+            accuracy = 0.0
+            std_dev = 0.0
         
         return {
-            'accuracy': float(np.mean(cv_scores)),
-            'std_dev': float(np.std(cv_scores)),
+            'accuracy': accuracy,
+            'std_dev': std_dev,
             'k': self.k,
             'metric': self.metric,
             'n_samples': len(X_train)

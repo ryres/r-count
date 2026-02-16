@@ -37,25 +37,30 @@ export function DashboardShell({ children }) {
     if (!isMounted) return null;
 
     const menuItems = [
-        { name: "Overview", icon: LayoutDashboard, path: "/dashboard", role: ["user", "admin"] },
-        { name: "Pengguna", icon: Users, path: "/dashboard/pengguna", role: ["admin"] },
+        { name: "Overview", icon: LayoutDashboard, path: "/dashboard", role: ["user", "administrator"] },
+        { name: "Pengguna", icon: Users, path: "/dashboard/pengguna", role: ["administrator"] },
         {
             name: "Data",
             icon: Database,
             path: "/dashboard/data",
+            role: ["user", "administrator"],
             subItems: [
                 { name: "Hitung Data", icon: Calculator, path: "/dashboard/data/hitung" },
                 { name: "Upload Data", icon: Upload, path: "/dashboard/data/upload" },
             ]
         },
+        { name: "Log Out", icon: LogOut, path: "/logout", role: ["user", "administrator"] },
     ];
+
+    const filteredMenu = menuItems.filter(item => item.role.includes(userRole));
 
     const handleLogout = () => {
         sessionStorage.removeItem("userRole");
+        document.cookie = "auth_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         router.push("/login");
     };
 
-    const isActive = (path) => pathname === path || pathname.startsWith(path + "/");
+    const isActive = (path) => pathname === path || (path !== "/" && pathname.startsWith(path));
 
     return (
         <div className="flex h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
@@ -97,23 +102,34 @@ export function DashboardShell({ children }) {
                     </div>
 
                     <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
-                        {menuItems.map((item) => (
+                        {filteredMenu.map((item) => (
                             <div key={item.path} className="space-y-1">
-                                <Link href={item.path}>
+                                {item.path === "/logout" ? (
                                     <Button
                                         variant="ghost"
-                                        className={cn(
-                                            "w-full justify-start gap-3 h-12 font-bold transition-all px-4 rounded-xl",
-                                            isActive(item.path)
-                                                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 hover:text-white"
-                                                : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-                                        )}
+                                        onClick={handleLogout}
+                                        className="w-full justify-start gap-3 h-12 font-bold text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl px-4 transition-all"
                                     >
-                                        <item.icon className={cn("h-5 w-5", isActive(item.path) ? "text-white" : "opacity-60")} />
+                                        <item.icon className="h-5 w-5" />
                                         {item.name}
-                                        {item.subItems && <ChevronRight className={cn("h-3 w-3 ml-auto opacity-40 transition-transform", isActive(item.path) && "rotate-90")} />}
                                     </Button>
-                                </Link>
+                                ) : (
+                                    <Link href={item.path}>
+                                        <Button
+                                            variant="ghost"
+                                            className={cn(
+                                                "w-full justify-start gap-3 h-12 font-bold transition-all px-4 rounded-xl",
+                                                isActive(item.path)
+                                                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 hover:text-white"
+                                                    : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                            )}
+                                        >
+                                            <item.icon className={cn("h-5 w-5", isActive(item.path) ? "text-white" : "opacity-60")} />
+                                            {item.name}
+                                            {item.subItems && <ChevronRight className={cn("h-3 w-3 ml-auto opacity-40 transition-transform", isActive(item.path) && "rotate-90")} />}
+                                        </Button>
+                                    </Link>
+                                )}
 
                                 {item.subItems && isActive(item.path) && (
                                     <div className="mt-1 ml-4 border-l-2 border-slate-100 dark:border-slate-800 pl-4 space-y-1 flex flex-col">
@@ -146,14 +162,6 @@ export function DashboardShell({ children }) {
                             </div>
                             <ThemeToggle />
                         </div>
-                        <Button
-                            variant="ghost"
-                            onClick={handleLogout}
-                            className="w-full justify-start gap-3 h-12 font-bold text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl px-4 border border-transparent hover:border-red-100 dark:hover:border-red-900/30 transition-all font-inter"
-                        >
-                            <LogOut className="h-5 w-5" />
-                            Log Out
-                        </Button>
                     </div>
                 </div>
             </aside>

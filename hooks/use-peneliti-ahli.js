@@ -192,12 +192,17 @@ export function usePenelitiAhli() {
             };
 
             const result = await fetchPythonApi('/api/knn/calculate', payload);
+
+            // Perbaikan mapping: result.data adalah output dari calculate_knn
+            // yang berisi { predictions: [{ prediction, confidence, ... }] }
+            const firstResult = result.data.predictions[0];
+
             const prediction = {
                 id: generateId(),
                 type: 'KNN',
                 timestamp: new Date().toISOString(),
-                prediction: result.data.predictions[0],
-                confidence: result.data.confidence_scores[0],
+                prediction: firstResult.prediction,
+                confidence: firstResult.confidence || 0,
                 input: testFeatures
             };
 
@@ -219,12 +224,17 @@ export function usePenelitiAhli() {
         setError(null);
 
         try {
-            const result = await fetchPythonApi('/api/fuzzy/calculate', { inputs: inputValues });
+            // Perbaikan key: backend ekspektasi 'input_values'
+            const result = await fetchPythonApi('/api/fuzzy/calculate', {
+                input_values: inputValues,
+                weights: dataState.kriteria.map(k => k.weight)
+            });
+
             const evaluation = {
                 id: generateId(),
                 type: 'FUZZY',
                 timestamp: new Date().toISOString(),
-                data: result.data,
+                data: result.data || { value: 0, category: 'N/A' },
                 input: inputValues
             };
 

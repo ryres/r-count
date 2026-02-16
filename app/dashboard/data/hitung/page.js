@@ -179,7 +179,7 @@ export default function HitungDataPage() {
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <Badge className="bg-emerald-500 hover:bg-emerald-600 font-bold">
-                                                    {(results.knn.confidence * 100).toFixed(1)}% Confidence
+                                                    {(Number(results.knn.confidence || 0) * 100).toFixed(1)}% Confidence
                                                 </Badge>
                                             </div>
                                         </div>
@@ -187,7 +187,7 @@ export default function HitungDataPage() {
                                 )}
 
                                 {/* Result Block Fuzzy */}
-                                {results.fuzzy && (
+                                {results.fuzzy && results.fuzzy.data && (
                                     <div className="p-6 rounded-2xl bg-violet-50/50 dark:bg-violet-950/20 border border-violet-100 dark:border-violet-900/40 relative overflow-hidden group">
                                         <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                                             <Activity className="h-20 w-20" />
@@ -196,17 +196,19 @@ export default function HitungDataPage() {
                                         <div className="space-y-4">
                                             <div>
                                                 <p className="text-xs text-muted-foreground italic mb-1">Skor Defuzzifikasi:</p>
-                                                <p className="text-4xl font-extrabold tracking-tight">{results.fuzzy.data.value.toFixed(2)}</p>
+                                                <p className="text-4xl font-extrabold tracking-tight">
+                                                    {Number(results.fuzzy.data.value || 0).toFixed(2)}
+                                                </p>
                                             </div>
                                             <div className="space-y-2">
                                                 <div className="flex justify-between text-[10px] font-bold uppercase opacity-60">
-                                                    <span>Interpretasi: {results.fuzzy.data.category}</span>
-                                                    <span>{results.fuzzy.data.value.toFixed(0)}%</span>
+                                                    <span>Interpretasi: {results.fuzzy.data.category || 'N/A'}</span>
+                                                    <span>{Number(results.fuzzy.data.value || 0).toFixed(0)}%</span>
                                                 </div>
                                                 <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                                                     <div
                                                         className="h-full bg-violet-500 transition-all duration-1000"
-                                                        style={{ width: `${results.fuzzy.data.value}%` }}
+                                                        style={{ width: `${Math.min(100, Math.max(0, results.fuzzy.data.value || 0))}%` }}
                                                     />
                                                 </div>
                                             </div>
@@ -263,7 +265,7 @@ export default function HitungDataPage() {
                                                         [{h.input.join(', ')}]
                                                     </TableCell>
                                                     <TableCell className="text-right font-bold text-xs">
-                                                        {h.type === 'KNN' ? `Label ${h.prediction}` : h.data.value.toFixed(2)}
+                                                        {h.type === 'KNN' ? `Label ${h.prediction}` : Number(h.data?.value || 0).toFixed(2)}
                                                     </TableCell>
                                                 </TableRow>
                                             ))
