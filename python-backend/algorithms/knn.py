@@ -48,12 +48,19 @@ class KNNAlgorithm:
         X_train = np.array(X_train)
         y_train = np.array(y_train)
         
+        n_samples = len(X_train)
+        if n_samples == 0:
+            raise ValueError("Data training tidak boleh kosong.")
+            
+        # Pastikan K tidak lebih besar dari jumlah sampel
+        effective_k = min(self.k, n_samples)
+        
         # Normalisasi data
         X_train_scaled = self.scaler.fit_transform(X_train)
         
         # Inisialisasi dan latih model
         self.model = KNeighborsClassifier(
-            n_neighbors=self.k,
+            n_neighbors=effective_k,
             metric=self.metric,
             weights=self.weights
         )
@@ -61,20 +68,22 @@ class KNNAlgorithm:
         
         # Hitung accuracy dengan cross-validation (dinamis cv)
         try:
-            n_samples = len(X_train)
             cv_value = min(5, n_samples) if n_samples >= 2 else 0
             
-            if cv_value >= 2:
+            # Cross validation hanya jika ada cukup sampel dan lebih dari 1 kelas
+            unique_classes = len(np.unique(y_train))
+            
+            if cv_value >= 2 and unique_classes >= 2:
                 cv_scores = cross_val_score(self.model, X_train_scaled, y_train, cv=cv_value)
                 accuracy = float(np.mean(cv_scores))
                 std_dev = float(np.std(cv_scores))
             else:
-                # Fallback jika data terlalu sedikit untuk CV
-                self.model.fit(X_train_scaled, y_train)
+                # Fallback jika data terlalu sedikit untuk CV atau hanya 1 kelas
                 accuracy = float(self.model.score(X_train_scaled, y_train))
                 std_dev = 0.0
         except Exception:
-            accuracy = 0.0
+            # Final fallback
+            accuracy = 1.0 if n_samples > 0 else 0.0
             std_dev = 0.0
         
         return {
@@ -147,23 +156,49 @@ class KNNAlgorithm:
         """
         X_train = np.array(X_train)
         y_train = np.array(y_train)
+        n_samples = len(X_train)
+        
+        if n_samples < 2:
+            return {
+                'optimal_k': 1,
+                'optimal_accuracy': 1.0 if n_samples == 1 else 0.0,
+                'all_scores': []
+            }
+
         X_train_scaled = self.scaler.fit_transform(X_train)
         
         k_scores = []
-        k_values = range(k_range[0], k_range[1] + 1)
+        # K tidak boleh lebih besar dari n_samples
+        max_k = min(k_range[1], n_samples - 1 if n_samples > 1 else 1)
+        max_k = max(k_range[0], max_k)
+        
+        k_values = range(k_range[0], max_k + 1)
+        cv_value = min(5, n_samples)
+        unique_classes = len(np.unique(y_train))
         
         for k in k_values:
-            temp_model = KNeighborsClassifier(
-                n_neighbors=k,
-                metric=self.metric,
-                weights=self.weights
-            )
-            scores = cross_val_score(temp_model, X_train_scaled, y_train, cv=5)
-            k_scores.append({
-                'k': k,
-                'accuracy': float(np.mean(scores)),
-                'std_dev': float(np.std(scores))
-            })
+            try:
+                temp_model = KNeighborsClassifier(
+                    n_neighbors=k,
+                    metric=self.metric,
+                    weights=self.weights
+                )
+                if cv_value >= 2 and unique_classes >= 2:
+                    scores = cross_val_score(temp_model, X_train_scaled, y_train, cv=cv_value)
+                    acc = float(np.mean(scores))
+                    std = float(np.std(scores))
+                else:
+                    temp_model.fit(X_train_scaled, y_train)
+                    acc = float(temp_model.score(X_train_scaled, y_train))
+                    std = 0.0
+                    
+                k_scores.append({
+                    'k': k,
+                    'accuracy': acc,
+                    'std_dev': std
+                })
+            except Exception:
+                continue
         
         # Cari K dengan accuracy tertinggi
         best_k = max(k_scores, key=lambda x: x['accuracy'])
