@@ -28,6 +28,7 @@ export default function Home() {
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
             <a href="#fitur" className="hover:text-primary transition-colors">Fitur</a>
             <a href="#metode" className="hover:text-primary transition-colors">Metode</a>
+            <Link href="/peneliti" className="hover:text-primary transition-colors">Demo</Link>
           </div>
 
           <div className="flex items-center gap-4">
@@ -70,11 +71,6 @@ export default function Home() {
               <Link href="/login">
                 <Button size="lg" className="h-14 px-8 text-lg bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/25">
                   Mulai Sekarang <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/peneliti">
-                <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2">
-                  Lihat Demo Hook
                 </Button>
               </Link>
             </div>
