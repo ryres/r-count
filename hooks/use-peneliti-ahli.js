@@ -74,17 +74,28 @@ export function usePenelitiAhli() {
         }
     }, []);
 
-    // Simpan ke LocalStorage saat dataState berubah
+    // Simpan ke LocalStorage saat dataState berubah (Debounced untuk performa)
     useEffect(() => {
-        if (isMounted) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                users: dataState.users,
-                kriteria: dataState.kriteria,
-                bobot: dataState.bobot,
-                data: dataState.data,
-                history: dataState.history
-            }));
-        }
+        if (!isMounted) return;
+
+        const timer = setTimeout(() => {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    users: dataState.users,
+                    kriteria: dataState.kriteria,
+                    bobot: dataState.bobot,
+                    data: dataState.data,
+                    history: dataState.history
+                }));
+            } catch (e) {
+                console.error("Gagal simpan ke LocalStorage:", e);
+                if (e.name === 'QuotaExceededError') {
+                    setError("Penyimpanan penuh (LocalStorage Quota Exceeded). Hapus beberapa data.");
+                }
+            }
+        }, 1000); // Tunggu 1 detik diam sebelum simpan
+
+        return () => clearTimeout(timer);
     }, [dataState, isMounted]);
 
     // --- CRUD Operations Helper ---

@@ -38,6 +38,12 @@ export default function UploadDataPage() {
     const [isUploading, setIsUploading] = useState(false);
     const [dragActive, setDragActive] = useState(false);
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    const totalPages = Math.ceil((data?.length || 0) / itemsPerPage);
+    const currentData = data?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) || [];
+
     const handleFileUpload = (e) => {
         const files = e.target.files || (e.dataTransfer && e.dataTransfer.files);
         if (files && files.length > 0) {
@@ -208,40 +214,74 @@ export default function UploadDataPage() {
                         </CardHeader>
                         <CardContent id="dataset-preview" className="flex-1 overflow-auto bg-white dark:bg-slate-900 rounded-b-xl">
                             {data.length > 0 ? (
-                                <div className="border rounded-xl">
-                                    <Table>
-                                        <TableHeader className="bg-muted/50">
-                                            <TableRow>
-                                                <TableHead className="font-bold text-xs">ID DATA</TableHead>
-                                                <TableHead className="font-bold text-xs text-center">FITUR (F1, F2, F3)</TableHead>
-                                                <TableHead className="font-bold text-xs text-center">LABEL</TableHead>
-                                                <TableHead className="text-right font-bold text-xs">AKSI</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {data.map((item, idx) => (
-                                                <TableRow key={item.id} className="hover:bg-muted/30 transition-colors">
-                                                    <TableCell className="text-xs font-mono opacity-60">#{idx + 1}</TableCell>
-                                                    <TableCell className="text-center">
-                                                        <div className="flex justify-center gap-2">
-                                                            {item.features.map((f, i) => (
-                                                                <Badge key={i} variant="outline" className="text-[10px] font-mono">{f}</Badge>
-                                                            ))}
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell className="text-center font-bold">
-                                                        <Badge className="bg-indigo-600">{item.label}</Badge>
-                                                    </TableCell>
-                                                    <TableCell className="text-right">
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => deleteData(item.id)}>
-                                                            <Trash2 className="h-4 w-4 text-red-500" />
-                                                        </Button>
-                                                    </TableCell>
+                                <>
+                                    <div className="border rounded-xl">
+                                        <Table>
+                                            <TableHeader className="bg-muted/50">
+                                                <TableRow>
+                                                    <TableHead className="font-bold text-xs">ID DATA</TableHead>
+                                                    <TableHead className="font-bold text-xs text-center">FITUR (F1, F2, F3)</TableHead>
+                                                    <TableHead className="font-bold text-xs text-center">LABEL</TableHead>
+                                                    <TableHead className="text-right font-bold text-xs">AKSI</TableHead>
                                                 </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </div>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {currentData.map((item, idx) => (
+                                                    <TableRow key={item.id} className="hover:bg-muted/30 transition-colors">
+                                                        <TableCell className="text-xs font-mono opacity-60">#{(currentPage - 1) * itemsPerPage + idx + 1}</TableCell>
+                                                        <TableCell className="text-center">
+                                                            <div className="flex justify-center gap-2">
+                                                                {item.features.map((f, i) => (
+                                                                    <Badge key={i} variant="outline" className="text-[10px] font-mono">{f}</Badge>
+                                                                ))}
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="text-center font-bold">
+                                                            <Badge className="bg-indigo-600">{item.label}</Badge>
+                                                        </TableCell>
+                                                        <TableCell className="text-right">
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => deleteData(item.id)}>
+                                                                <Trash2 className="h-4 w-4 text-red-500" />
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+
+                                    {/* Pagination Controls */}
+                                    {totalPages > 1 && (
+                                        <div className="flex items-center justify-between pt-4">
+                                            <p className="text-[10px] text-muted-foreground italic">
+                                                Menampilkan {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, data.length)} dari {data.length} total baris
+                                            </p>
+                                            <div className="flex gap-1">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="h-8 text-[10px] font-bold"
+                                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                                    disabled={currentPage === 1}
+                                                >
+                                                    Sebelumnya
+                                                </Button>
+                                                <div className="flex items-center px-3 text-[10px] font-bold bg-muted/50 rounded-md">
+                                                    {currentPage} / {totalPages}
+                                                </div>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="h-8 text-[10px] font-bold"
+                                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                                    disabled={currentPage === totalPages}
+                                                >
+                                                    Selanjutnya
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="h-full flex flex-col items-center justify-center text-muted-foreground gap-4 border-2 border-dashed rounded-2xl py-20">
                                     <Database className="h-12 w-12 opacity-10" />

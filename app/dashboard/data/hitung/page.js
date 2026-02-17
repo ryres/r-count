@@ -38,6 +38,12 @@ export default function HitungDataPage() {
     const [testPoint, setTestPoint] = useState({ f1: "", f2: "", f3: "" });
     const [method, setMethod] = useState("knn");
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+    const totalPages = Math.ceil((history?.length || 0) / itemsPerPage);
+    const currentHistory = history?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) || [];
+
     const handleCalculate = async () => {
         if (!testPoint.f1 || !testPoint.f2 || !testPoint.f3) return;
 
@@ -247,8 +253,8 @@ export default function HitungDataPage() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {history && history.length > 0 ? (
-                                            history.map((h, i) => (
+                                        {currentHistory.length > 0 ? (
+                                            currentHistory.map((h, i) => (
                                                 <TableRow key={h.id || i} className="hover:bg-muted/20 transition-colors">
                                                     <TableCell className="text-[10px] opacity-60">
                                                         {new Date(h.timestamp).toLocaleTimeString('id-ID')}
@@ -279,6 +285,38 @@ export default function HitungDataPage() {
                                     </TableBody>
                                 </Table>
                             </div>
+
+                            {/* Pagination Controls */}
+                            {totalPages > 1 && (
+                                <div className="flex items-center justify-between pt-2">
+                                    <p className="text-[10px] text-muted-foreground">
+                                        Menampilkan {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, history.length)} dari {history.length} data
+                                    </p>
+                                    <div className="flex gap-1">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-7 text-[10px] font-bold"
+                                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                            disabled={currentPage === 1}
+                                        >
+                                            Prev
+                                        </Button>
+                                        <div className="flex items-center px-2 text-[10px] font-bold bg-muted/50 rounded-md">
+                                            {currentPage} / {totalPages}
+                                        </div>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-7 text-[10px] font-bold"
+                                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                            disabled={currentPage === totalPages}
+                                        >
+                                            Next
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
