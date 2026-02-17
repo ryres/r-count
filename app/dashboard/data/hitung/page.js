@@ -14,13 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
-    Calculator,
-    Settings,
-    Play,
-    CheckCircle2,
-    AlertCircle,
-    Loader2,
-    History,
     Activity
 } from "lucide-react";
 import {
@@ -34,8 +27,8 @@ import {
 import { cn } from "@/lib/utils";
 
 export default function HitungDataPage() {
-    const { calculateKNN, calculateFuzzy, isLoading, results, history, error, isMounted, addData } = usePenelitiAhli();
-    const [testPoint, setTestPoint] = useState({ f1: "", f2: "", f3: "", label: "" });
+    const { calculateKNN, calculateFuzzy, isLoading, results, history, error, isMounted } = usePenelitiAhli();
+    const [testPoint, setTestPoint] = useState({ f1: "", f2: "", f3: "" });
     const [method, setMethod] = useState("knn");
 
     // Pagination state
@@ -55,20 +48,6 @@ export default function HitungDataPage() {
             const res = await calculateFuzzy(features);
             if (res) toast("Inference Fuzzy Logic berhasil!", "success");
         }
-    };
-
-    const handleSaveToTraining = () => {
-        if (!testPoint.f1 || !testPoint.f2 || !testPoint.f3 || !testPoint.label) {
-            toast("Lengkapi fitur dan label terlebih dahulu!", "error");
-            return;
-        }
-
-        addData({
-            features: [Number(testPoint.f1), Number(testPoint.f2), Number(testPoint.f3)],
-            label: testPoint.label
-        });
-
-        toast("Data berhasil ditambahkan ke dataset training!", "success");
     };
 
     if (!isMounted) return null;
@@ -143,43 +122,21 @@ export default function HitungDataPage() {
                                         onChange={e => setTestPoint({ ...testPoint, f3: e.target.value })}
                                     />
                                 </div>
-                                <div className="h-px bg-muted/50 my-1" />
-                                <div className="space-y-1.5">
-                                    <label className="text-[9px] font-bold uppercase text-indigo-600 tracking-widest pl-1">Label Dataset (Training)</label>
-                                    <Input
-                                        className="h-11 border-indigo-200 dark:border-indigo-900 border-2"
-                                        placeholder="Contoh: Sangat Baik, Kategori A, dll"
-                                        value={testPoint.label}
-                                        onChange={e => setTestPoint({ ...testPoint, label: e.target.value })}
-                                    />
-                                </div>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-2">
-                            <Button
-                                className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 font-bold shadow-lg shadow-indigo-600/20"
-                                onClick={handleCalculate}
-                                disabled={isLoading || !testPoint.f1}
-                            >
-                                {isLoading ? (
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                ) : (
-                                    <Play className="mr-2 h-4 w-4" />
-                                )}
-                                Jalankan Perhitungan
-                            </Button>
-
-                            <Button
-                                variant="outline"
-                                className="w-full h-10 font-bold border-2 border-indigo-200 dark:border-indigo-900 text-indigo-600"
-                                onClick={handleSaveToTraining}
-                                disabled={isLoading || !testPoint.label}
-                            >
-                                <Database className="mr-2 h-4 w-4" />
-                                Simpan ke Dataset Training
-                            </Button>
-                        </div>
+                        <Button
+                            className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 font-bold shadow-lg shadow-indigo-600/20"
+                            onClick={handleCalculate}
+                            disabled={isLoading || !testPoint.f1}
+                        >
+                            {isLoading ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Play className="mr-2 h-4 w-4" />
+                            )}
+                            Jalankan Perhitungan
+                        </Button>
                     </CardContent>
                 </Card>
 

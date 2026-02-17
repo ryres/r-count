@@ -23,7 +23,7 @@ export default function PenelitiPage() {
     } = usePenelitiAhli();
 
     const [newUser, setNewUser] = useState({ name: '', role: 'user' });
-    const [newData, setNewData] = useState({ label: '0', f1: '', f2: '', f3: '' });
+    const [newData, setNewData] = useState({ label: '', f1: '', f2: '', f3: '' });
     const [testPoint, setTestPoint] = useState({ f1: '', f2: '', f3: '' });
 
     if (!isMounted) return null;
@@ -36,12 +36,12 @@ export default function PenelitiPage() {
     };
 
     const handleAddData = () => {
-        if (newData.f1 && newData.f2 && newData.f3) {
+        if (newData.f1 && newData.f2 && newData.f3 && newData.label) {
             addData({
                 features: [Number(newData.f1), Number(newData.f2), Number(newData.f3)],
                 label: newData.label
             });
-            setNewData({ label: '0', f1: '', f2: '', f3: '' });
+            setNewData({ label: '', f1: '', f2: '', f3: '' });
         }
     };
 
@@ -130,11 +130,12 @@ export default function PenelitiPage() {
                         <CardDescription>Input data untuk referensi klasifikasi KNN.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="grid grid-cols-4 gap-2">
+                        <div className="grid grid-cols-5 gap-2">
                             <Input placeholder="F1" value={newData.f1} onChange={e => setNewData({ ...newData, f1: e.target.value })} />
                             <Input placeholder="F2" value={newData.f2} onChange={e => setNewData({ ...newData, f2: e.target.value })} />
                             <Input placeholder="F3" value={newData.f3} onChange={e => setNewData({ ...newData, f3: e.target.value })} />
-                            <Button onClick={handleAddData}><Plus className="h-4 w-4" /></Button>
+                            <Input placeholder="Label" value={newData.label} onChange={e => setNewData({ ...newData, label: e.target.value })} />
+                            <Button onClick={handleAddData} disabled={!newData.label}><Plus className="h-4 w-4" /></Button>
                         </div>
                         <div className="max-h-[200px] overflow-auto border rounded-md">
                             <Table>
