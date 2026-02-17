@@ -2,6 +2,7 @@
 
 import { usePenelitiAhli } from "@/hooks/use-peneliti-ahli";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
     Card, CardContent, CardDescription, CardHeader, CardTitle
 } from "@/components/ui/card";
@@ -10,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Loader2, Plus, Trash, Calculator, Printer, LogOut, UserPlus, PieChart as PieChartIcon } from "lucide-react";
+import { Loader2, Plus, Trash, Calculator, Printer, LogOut, UserPlus, PieChart as PieChartIcon, ArrowLeft } from "lucide-react";
 import {
     PieChart,
     Pie,
@@ -77,10 +78,19 @@ export default function PenelitiPage() {
 
     return (
         <div className="min-h-screen bg-background p-4 md:p-8 space-y-8">
-            <header className="flex justify-between items-center border-b pb-4">
-                <div>
-                    <h1 className="text-3xl font-bold">Panel Peneliti Ahli</h1>
-                    <p className="text-muted-foreground italic">KNN & Fuzzy Logic Implementation</p>
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4">
+                <div className="flex items-center gap-4">
+                    <Link href="/">
+                        <Button variant="ghost" size="sm" className="gap-2 font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50">
+                            <ArrowLeft className="h-4 w-4" />
+                            Kembali ke Home
+                        </Button>
+                    </Link>
+                    <div className="h-8 w-px bg-border hidden md:block" />
+                    <div>
+                        <h1 className="text-3xl font-bold font-black tracking-tight">Panel Peneliti Ahli</h1>
+                        <p className="text-muted-foreground italic text-[10px] uppercase font-bold tracking-widest opacity-70">KNN & Fuzzy Logic Implementation</p>
+                    </div>
                 </div>
                 <div className="flex gap-2">
                     <ThemeToggle />
