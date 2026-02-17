@@ -23,7 +23,7 @@ import { Toaster } from "@/components/ui/custom-toaster";
 
 export function DashboardShell({ children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [userRole, setUserRole] = useState("user");
+    const [userName, setUserName] = useState("Researcher Pro");
     const [isMounted, setIsMounted] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
@@ -31,7 +31,9 @@ export function DashboardShell({ children }) {
     useEffect(() => {
         setIsMounted(true);
         const role = sessionStorage.getItem("userRole") || "user";
+        const name = sessionStorage.getItem("userName") || "Researcher Pro";
         setUserRole(role);
+        setUserName(name);
     }, []);
 
     if (!isMounted) return null;
@@ -95,7 +97,7 @@ export function DashboardShell({ children }) {
                                 <UserIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                             </div>
                             <div className="min-w-0">
-                                <p className="text-sm font-black text-slate-900 dark:text-white truncate">Researcher Pro</p>
+                                <p className="text-sm font-black text-slate-900 dark:text-white truncate">{userName}</p>
                                 <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">{userRole}</p>
                             </div>
                         </div>

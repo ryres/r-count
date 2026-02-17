@@ -46,9 +46,10 @@ import {
 } from "@/components/ui/select";
 
 export default function PenggunaPage() {
-    const { users, addUser, deleteUser, isMounted } = usePenelitiAhli();
+    const { users, addUser, updateUser, deleteUser, isMounted } = usePenelitiAhli();
     const [searchTerm, setSearchTerm] = useState("");
     const [newUser, setNewUser] = useState({ name: "", email: "", role: "user" });
+    const [editingUser, setEditingUser] = useState(null);
 
     const filteredUsers = users.filter(u =>
         u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -62,6 +63,20 @@ export default function PenggunaPage() {
         addUser(newUser);
         setNewUser({ name: "", email: "", role: "user" });
         toast(`Pengguna ${newUser.name} berhasil ditambahkan!`, "success");
+    };
+
+    const handleUpdate = (e) => {
+        e.preventDefault();
+        if (!editingUser) return;
+
+        updateUser(editingUser.id, editingUser);
+        toast(`Data ${editingUser.name} berhasil diperbarui!`, "success");
+        setEditingUser(null);
+    };
+
+    const startEdit = (user) => {
+        setEditingUser({ ...user });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleDelete = (id, name) => {
@@ -85,42 +100,46 @@ export default function PenggunaPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* Form Tambah */}
-                <Card className="lg:col-span-1 h-fit">
+                <Card className="lg:col-span-1 h-fit border-2 border-indigo-100 dark:border-indigo-900 shadow-xl">
                     <CardHeader>
-                        <CardTitle className="text-sm font-bold uppercase tracking-widest">Tambah Pengguna</CardTitle>
-                        <CardDescription className="text-xs italic">Daftarkan peneliti baru ke sistem.</CardDescription>
+                        <CardTitle className="text-sm font-bold uppercase tracking-widest text-indigo-600">
+                            {editingUser ? "Edit Pengguna" : "Tambah Pengguna"}
+                        </CardTitle>
+                        <CardDescription className="text-xs italic">
+                            {editingUser ? `Mengubah data ${editingUser.name}` : "Daftarkan peneliti baru ke sistem."}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleAddUser} className="space-y-4">
+                        <form onSubmit={editingUser ? handleUpdate : handleAddUser} className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-wider opacity-60">Nama Lengkap</label>
+                                <label className="text-[10px] font-bold uppercase tracking-wider opacity-60 italic">Nama Lengkap</label>
                                 <Input
                                     placeholder="Contoh: Budi Santoso"
-                                    value={newUser.name}
-                                    onChange={e => setNewUser({ ...newUser, name: e.target.value })}
-                                    className="h-10"
+                                    value={editingUser ? editingUser.name : newUser.name}
+                                    onChange={e => editingUser ? setEditingUser({ ...editingUser, name: e.target.value }) : setNewUser({ ...newUser, name: e.target.value })}
+                                    className="h-10 border-indigo-50 dark:border-indigo-900 border-2"
                                     required
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-wider opacity-60">Alamat Email</label>
+                                <label className="text-[10px] font-bold uppercase tracking-wider opacity-60 italic">Alamat Email</label>
                                 <div className="relative group">
                                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                     <Input
                                         placeholder="nama@email.com"
-                                        value={newUser.email}
-                                        onChange={e => setNewUser({ ...newUser, email: e.target.value })}
-                                        className="pl-10 h-10"
+                                        value={editingUser ? editingUser.email : newUser.email}
+                                        onChange={e => editingUser ? setEditingUser({ ...editingUser, email: e.target.value }) : setNewUser({ ...newUser, email: e.target.value })}
+                                        className="pl-10 h-10 border-indigo-50 dark:border-indigo-900 border-2"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-wider opacity-60">Role / Hak Akses</label>
+                                <label className="text-[10px] font-bold uppercase tracking-wider opacity-60 italic">Role / Hak Akses</label>
                                 <Select
-                                    value={newUser.role}
-                                    onValueChange={val => setNewUser({ ...newUser, role: val })}
+                                    value={editingUser ? editingUser.role : newUser.role}
+                                    onValueChange={val => editingUser ? setEditingUser({ ...editingUser, role: val }) : setNewUser({ ...newUser, role: val })}
                                 >
-                                    <SelectTrigger className="h-10">
+                                    <SelectTrigger className="h-10 border-indigo-50 dark:border-indigo-900 border-2">
                                         <SelectValue placeholder="Pilih Role" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -129,9 +148,22 @@ export default function PenggunaPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 font-bold">
-                                <Plus className="mr-2 h-4 w-4" /> Tambah User
-                            </Button>
+
+                            <div className="flex flex-col gap-2">
+                                <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 font-bold shadow-lg shadow-indigo-600/20">
+                                    {editingUser ? "Simpan Perubahan" : "Tambah User"}
+                                </Button>
+                                {editingUser && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="w-full font-bold border-2"
+                                        onClick={() => setEditingUser(null)}
+                                    >
+                                        Batal Edit
+                                    </Button>
+                                )}
+                            </div>
                         </form>
                     </CardContent>
                 </Card>
@@ -208,10 +240,15 @@ export default function PenggunaPage() {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem className="text-xs font-bold">Edit Detail</DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="text-xs font-bold"
+                                                            onClick={() => startEdit(u)}
+                                                        >
+                                                            Edit Detail
+                                                        </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             className="text-xs font-bold text-red-500 focus:text-red-500"
-                                                            onClick={() => deleteUser(u.id)}
+                                                            onClick={() => handleDelete(u.id, u.name)}
                                                         >
                                                             Hapus Pengguna
                                                         </DropdownMenuItem>

@@ -40,24 +40,30 @@ export default function LoginPage() {
 
         // Mock validation against requested IDs
         const validUsers = [
-            { email: "ryan@nibs.sch.id", password: "12345", role: "administrator" },
-            { email: "op@nibs.sch.id", password: "12345", role: "user" }
+            { email: "ryan@nibs.sch.id", password: "12345", role: "administrator", name: "Ryan Administrator" },
+            { email: "op@nibs.sch.id", password: "12345", role: "user", name: "Operator Peneliti" }
         ];
 
-        const user = validUsers.find(u => u.email === credentials.email && u.password === credentials.password);
+        const userMatch = validUsers.find(u => u.email === credentials.email && u.password === credentials.password);
+        const emailMatch = validUsers.find(u => u.email === credentials.email);
 
         setTimeout(() => {
             setIsLoading(true);
-            if (user) {
-                if (user.role !== activeRole) {
-                    setError(`ID ini terdaftar sebagai ${user.role === 'administrator' ? 'Admin' : 'Pengguna'}. Silakan ganti tab.`);
+            if (userMatch) {
+                if (userMatch.role !== activeRole) {
+                    setError(`ID ini terdaftar sebagai ${userMatch.role === 'administrator' ? 'Admin' : 'Pengguna'}. Silakan ganti tab.`);
                     setIsLoading(false);
                     return;
                 }
-                sessionStorage.setItem("userRole", user.role);
+                sessionStorage.setItem("userRole", userMatch.role);
+                sessionStorage.setItem("userName", userMatch.name);
                 router.push("/dashboard");
             } else {
-                setError("Email atau kata sandi salah. Gunakan ryan@nibs.sch.id / 12345 atau op@nibs.sch.id / 12345.");
+                if (!emailMatch) {
+                    setError("Email salah");
+                } else {
+                    setError("Kata sandi salah");
+                }
                 setIsLoading(false);
             }
         }, 1200);

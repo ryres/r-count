@@ -10,7 +10,15 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Loader2, Plus, Trash, Calculator, Printer, LogOut, UserPlus } from "lucide-react";
+import { Loader2, Plus, Trash, Calculator, Printer, LogOut, UserPlus, PieChart as PieChartIcon } from "lucide-react";
+import {
+    PieChart,
+    Pie,
+    Cell,
+    ResponsiveContainer,
+    Tooltip,
+    Legend
+} from "recharts";
 
 export default function PenelitiPage() {
     const {
@@ -25,6 +33,16 @@ export default function PenelitiPage() {
     const [newUser, setNewUser] = useState({ name: '', role: 'user' });
     const [newData, setNewData] = useState({ label: '', f1: '', f2: '', f3: '' });
     const [testPoint, setTestPoint] = useState({ f1: '', f2: '', f3: '' });
+
+    // Chart Data Preparation
+    const chartData = Object.entries(
+        data.reduce((acc, curr) => {
+            acc[curr.label] = (acc[curr.label] || 0) + 1;
+            return acc;
+        }, {})
+    ).map(([name, value]) => ({ name, value }));
+
+    const COLORS = ['#6366f1', '#a855f7', '#ec4899', '#f43f5e', '#f97316', '#eab308'];
 
     if (!isMounted) return null;
 
@@ -79,47 +97,43 @@ export default function PenelitiPage() {
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* User Management */}
+                {/* Distribusi Data (Donut Chart) */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <UserPlus className="h-5 w-5" /> Kelola Pengguna
+                            <PieChartIcon className="h-5 w-5 text-indigo-600" /> Distribusi Data
                         </CardTitle>
-                        <CardDescription>Tambah atau hapus data pengguna sistem.</CardDescription>
+                        <CardDescription>Visualisasi penyebaran label pada dataset training.</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex gap-2">
-                            <Input
-                                placeholder="Nama Pengguna"
-                                value={newUser.name}
-                                onChange={e => setNewUser({ ...newUser, name: e.target.value })}
-                            />
-                            <Button onClick={handleAddUser} disabled={!newUser.name}>
-                                <Plus className="h-4 w-4 mr-2" /> Tambah
-                            </Button>
-                        </div>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Nama</TableHead>
-                                    <TableHead>Role</TableHead>
-                                    <TableHead className="text-right">Aksi</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {users.map(u => (
-                                    <TableRow key={u.id}>
-                                        <TableCell className="font-medium">{u.name}</TableCell>
-                                        <TableCell><Badge variant="outline">{u.role}</Badge></TableCell>
-                                        <TableCell className="text-right">
-                                            <Button variant="ghost" size="icon" onClick={() => deleteUser(u.id)}>
-                                                <Trash className="h-4 w-4 text-destructive" />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                    <CardContent className="h-[300px]">
+                        {data.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={chartData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                    >
+                                        {chartData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip
+                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                    />
+                                    <Legend verticalAlign="bottom" height={36} />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="h-full flex flex-col items-center justify-center text-muted-foreground italic gap-2">
+                                <PieChartIcon className="h-10 w-10 opacity-10" />
+                                <p className="text-sm">Belum ada data untuk dianalisis</p>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 
