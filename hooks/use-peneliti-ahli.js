@@ -5,7 +5,8 @@ import { useState, useEffect, useCallback } from 'react';
 const STORAGE_KEY = 'peneliti-ahli-v1';
 
 // URL API - Gunakan env variable untuk production
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+// URL API - Gunakan 127.0.0.1 untuk stabilitas di Windows
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
 
 /**
  * Custom hook untuk mengelola state dan logika Peneliti Ahli
@@ -129,7 +130,7 @@ export function usePenelitiAhli() {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await fetch(`http://localhost:5000${endpoint}`, {
+            const response = await fetch(`${API_URL}${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -193,16 +193,6 @@ export function DashboardShell({ children }) {
                                 </p>
                             </div>
 
-                            <div className="bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3 px-4">
-                                <div className="text-right hidden sm:block">
-                                    <p className="text-[9px] font-black uppercase text-slate-400">Terakhir Update</p>
-                                    <p className="text-[10px] font-bold">Baru saja</p>
-                                </div>
-                                <div className="h-8 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block mx-1" />
-                                <div className="flex items-center gap-2">
-                                    <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-black text-white">AZ</div>
-                                </div>
-                            </div>
                         </div>
 
                         {/* The Page Content */}

@@ -232,12 +232,24 @@ def simple_fuzzy_inference(input_values, weights=None):
     input_values = np.array(input_values)
     
     if weights is None:
-        weights = np.ones(len(input_values))
+        weights = np.ones(len(input_values)) / len(input_values)
     else:
         weights = np.array(weights)
-    
-    # Normalisasi weights
-    weights = weights / np.sum(weights)
+        
+    # Pastikan input_values dan weights punya panjang sama
+    if len(weights) != len(input_values):
+        if len(weights) > len(input_values):
+            weights = weights[:len(input_values)]
+        else:
+            padding = np.ones(len(input_values) - len(weights)) * (1.0 / len(input_values))
+            weights = np.concatenate([weights, padding])
+            
+    # Normalisasi weights (mencegah DivByZero)
+    total_weight = np.sum(weights)
+    if total_weight == 0:
+        weights = np.ones(len(input_values)) / len(input_values)
+    else:
+        weights = weights / total_weight
     
     # Weighted average (simplified fuzzy aggregation)
     weighted_result = np.sum(input_values * weights)

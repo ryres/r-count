@@ -192,8 +192,10 @@ def fuzzy_calculate():
         input_values = data.get('input_values')
         weights = data.get('weights')
         
-        if not input_values:
-            return jsonify({'error': 'input_values is required'}), 400
+        # Validasi kriteria vs input
+        if weights and len(weights) != len(input_values):
+            # Jika tidak sama, coba fallback ke bobot rata-rata atau sesuaikan
+            print(f"⚠️ Warning: Weights length ({len(weights)}) matches input length ({len(input_values)})")
         
         # Kalkulasi fuzzy
         result = simple_fuzzy_inference(input_values, weights)
