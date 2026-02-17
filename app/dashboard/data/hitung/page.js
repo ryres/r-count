@@ -267,7 +267,7 @@ export default function HitungDataPage() {
                                                             {h.type}
                                                         </Badge>
                                                     </TableCell>
-                                                    <TableCell className="text-[10px] font-mono">
+                                                    <TableCell className="text-[10px] font-semibold">
                                                         [{h.input.join(', ')}]
                                                     </TableCell>
                                                     <TableCell className="text-right font-bold text-xs">

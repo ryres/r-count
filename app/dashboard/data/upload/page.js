@@ -257,11 +257,11 @@ export default function UploadDataPage() {
                                             <TableBody>
                                                 {currentData.map((item, idx) => (
                                                     <TableRow key={item.id} className="hover:bg-muted/30 transition-colors">
-                                                        <TableCell className="text-xs font-mono opacity-60">#{(currentPage - 1) * itemsPerPage + idx + 1}</TableCell>
+                                                        <TableCell className="text-xs font-medium opacity-60">#{(currentPage - 1) * itemsPerPage + idx + 1}</TableCell>
                                                         <TableCell className="text-center">
                                                             <div className="flex justify-center gap-2">
                                                                 {item.features.map((f, i) => (
-                                                                    <Badge key={i} variant="outline" className="text-[10px] font-mono">{f}</Badge>
+                                                                    <Badge key={i} variant="outline" className="text-[10px] font-semibold">{f}</Badge>
                                                                 ))}
                                                             </div>
                                                         </TableCell>
