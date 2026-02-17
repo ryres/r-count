@@ -1,0 +1,11 @@
+ID,F1_Usia,F2_Tekanan_Darah,F3_Kolesterol,Label
+1,25,120,180,Rendah
+2,45,140,220,Sedang
+3,60,160,260,Tinggi
+4,30,115,170,Rendah
+5,50,145,230,Sedang
+6,70,170,280,Tinggi
+7,22,110,160,Rendah
+8,48,135,210,Sedang
+9,65,155,250,Tinggi
+10,55,150,240,Sedang

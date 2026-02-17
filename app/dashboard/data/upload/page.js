@@ -22,8 +22,16 @@ import {
     Loader2,
     Database,
     Table as TableIcon,
-    Trash2
+    Trash2,
+    Download,
+    FileDown
 } from "lucide-react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
     Table,
     TableBody,
@@ -172,6 +180,27 @@ export default function UploadDataPage() {
                                 >
                                     Pilih File
                                 </Button>
+                            </div>
+
+                            <div className="mt-4">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="sm" className="w-full text-indigo-600 font-bold gap-2 hover:bg-indigo-50 dark:hover:bg-indigo-950/30">
+                                            <Download className="h-4 w-4" /> Download Sample
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-56 font-bold">
+                                        <DropdownMenuItem onClick={() => window.open('/samples/sample_data_akademik.csv')}>
+                                            <FileDown className="mr-2 h-4 w-4" /> Data Akademik (.csv)
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => window.open('/samples/sample_data_kesehatan.csv')}>
+                                            <FileDown className="mr-2 h-4 w-4" /> Data Kesehatan (.csv)
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => window.open('/samples/sample_data_produk.json')}>
+                                            <FileDown className="mr-2 h-4 w-4" /> Data Produk (.json)
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
 
                             <div className="mt-8 space-y-4">
