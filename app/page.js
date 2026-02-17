@@ -34,8 +34,8 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <ThemeToggle />
             <Link href="/login">
-              <Button size="sm" className="hidden sm:flex bg-indigo-600 hover:bg-indigo-700">
-                Masuk Dashboard
+              <Button size="sm" className="hidden sm:flex bg-indigo-600 hover:bg-indigo-700 font-bold px-6">
+                Login
               </Button>
             </Link>
           </div>
