@@ -23,6 +23,7 @@ import { Toaster } from "@/components/ui/custom-toaster";
 
 export function DashboardShell({ children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [userRole, setUserRole] = useState("user");
     const [userName, setUserName] = useState("Researcher Pro");
     const [isMounted, setIsMounted] = useState(false);
     const pathname = usePathname();
