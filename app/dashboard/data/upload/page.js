@@ -196,8 +196,8 @@ export default function UploadDataPage() {
                                         <DropdownMenuItem onClick={() => window.open('/samples/sample_data_kesehatan.csv')}>
                                             <FileDown className="mr-2 h-4 w-4" /> Data Kesehatan (.csv)
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => window.open('/samples/sample_data_produk.json')}>
-                                            <FileDown className="mr-2 h-4 w-4" /> Data Produk (.json)
+                                        <DropdownMenuItem onClick={() => window.open('/samples/sample_data_produk.csv')}>
+                                            <FileDown className="mr-2 h-4 w-4" /> Data Produk (.csv)
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>

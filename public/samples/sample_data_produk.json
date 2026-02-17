@@ -1,8 +1,0 @@
-[
-  {"features": [90, 80, 50], "label": "Premium"},
-  {"features": [70, 70, 70], "label": "Standar"},
-  {"features": [50, 40, 90], "label": "Ekonomis"},
-  {"features": [95, 85, 40], "label": "Premium"},
-  {"features": [60, 65, 80], "label": "Standar"},
-  {"features": [40, 30, 95], "label": "Ekonomis"}
-]
